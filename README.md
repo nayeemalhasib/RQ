@@ -6,8 +6,6 @@ This repository hosts The Researcher's Quest, an interactive, browser-based tool
 Project Overview
 This tool guides users—referred to as the "Hero"—through the necessary steps of academic inquiry, ensuring methodological coherence and logical alignment from start to finish.
 
-Shutterstock
-
 The core research pathway is presented as an adventure map:
 
 Prelude & Boon Selection: Choosing an innate Researcher Class (e.g., Theorist, Analyst) that grants unique, strategic advantages.
