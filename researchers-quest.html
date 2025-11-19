@@ -157,12 +157,25 @@
       border-color: var(--accent);
     }
 
-    .step-container {
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+.step-container {
       margin-top: 10px;
       padding: 18px 16px 14px;
       border-radius: var(--radius-lg);
       border: 1px solid var(--border-subtle);
       background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.09), rgba(15, 23, 42, 0.98));
+      animation: fadeInUp 0.35s ease;
     }
 
     .step-header {
@@ -507,7 +520,53 @@
         padding: 12px 10px;
       }
     }
-  </style>
+  
+    .compact-theory {
+      margin-top: 10px;
+      font-size: 0.8rem;
+    }
+
+    .compact-theory summary {
+      cursor: pointer;
+      color: var(--accent);
+    }
+
+    .compact-theory .theory-table {
+      margin-top: 6px;
+      max-height: 210px;
+      overflow: auto;
+    }
+
+    .compact-theory table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+
+    .compact-theory th,
+    .compact-theory td {
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 4px 6px;
+      vertical-align: top;
+    }
+
+    .compact-theory th {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--accent);
+    }
+
+    .scenario-tools {
+      margin: 6px 0 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .scenario-tools select {
+      width: 100%;
+      font-size: 0.8rem;
+    }
+</style>
 </head>
 <body>
   <div id="app">
@@ -541,6 +600,38 @@
   </div>
 
   <script>
+
+    // --- Simple Sound Effects (Web Audio API) ---
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        audioCtx = new AC();
+      }
+      return audioCtx;
+    }
+
+    function playSfx(type = "click") {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      let freq = 380;
+      if (type === "success") freq = 520;
+      if (type === "error") freq = 220;
+
+      osc.frequency.value = freq;
+      const now = ctx.currentTime;
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    }
+
     const state = {
       currentStep: 1, 
       maxStep: 11, 
@@ -621,6 +712,25 @@
       "Creative Writing as a Research Method",
       "Digital Humanities",
     ];
+
+    const scenarioPresets = [
+      {
+        id: "nlg",
+        title: "Never Let Me Go — Ethics, Memory & Control",
+        text: "A researcher is conducting an in-depth study of Kazuo Ishiguro's Never Let Me Go to examine ethical dilemmas, memory, and the search for meaning within a dystopian society. The study explores how first-person narration, restrained emotional tone, and recurring motifs (such as art, donations, and lost places) reveal the inner worlds of the main characters as they confront questions of humanity, fate, and personal agency."
+      },
+      {
+        id: "ttc",
+        title: "A Tale of Two Cities — Class, Revolution & Sacrifice",
+        text: "A researcher is studying Charles Dickens's A Tale of Two Cities to investigate how the novel represents class struggle, political violence, and personal sacrifice during the French Revolution. The study focuses on the contrast between London and Paris, the motif of 'recalled to life', and the moral transformation of characters such as Sydney Carton."
+      },
+      {
+        id: "generic",
+        title: "Generic Literary Scenario — Identity & Power",
+        text: "A researcher examines a modern novel in which the protagonist struggles with identity, social expectations, and institutional power. The study explores how memory, narrative voice, and recurring images of confinement and freedom construct the character's search for selfhood."
+      }
+    ];
+
 
     const roles = [
       {
@@ -720,6 +830,7 @@
         state.currentStep++;
         renderStepsBar();
         renderStepContent();
+        playSfx("click");
       }
     }
 
@@ -728,7 +839,21 @@
         state.currentStep--;
         renderStepsBar();
         renderStepContent();
+        playSfx("click");
       }
+    }
+
+
+    function loadScenarioPreset(index) {
+      const i = parseInt(index, 10);
+      if (isNaN(i) || !scenarioPresets[i]) return;
+      const preset = scenarioPresets[i];
+      state.scenario = preset.text;
+      const textarea = document.getElementById("scenarioText");
+      if (textarea) {
+        textarea.value = preset.text;
+      }
+      playSfx("success");
     }
 
     function addKeyword() {
@@ -786,6 +911,7 @@
       const idx = state.theories.indexOf(theory);
       // DYNAMIC MAX THEORIES: 3 for Theorist, 2 otherwise
       const maxTheories = state.role === "Theorist" ? 3 : 2;
+      playSfx("click");
 
       if (idx === -1) {
         if (state.theories.length < maxTheories) {
@@ -803,11 +929,13 @@
     function toggleMethodology(m) {
       state.methodology = m;
       renderStepContent();
+      playSfx("click");
     }
 
     function toggleMethod(m) {
       const idx = state.methods.indexOf(m);
       const maxMethods = state.role === "Analyst" ? 4 : 3;
+      playSfx("click");
 
       if (idx === -1) {
         if (state.methods.length < maxMethods) {
@@ -825,6 +953,7 @@
     function selectRole(roleId) {
       state.role = roleId;
       renderStepContent();
+      playSfx("success");
     }
 
     function updateXP(field, value) {
@@ -1040,6 +1169,15 @@
             <h3>Research Scenario</h3>
             <small>The Mission Scroll defining the Final Boss.</small>
             <label for="scenarioText">Scenario Text</label>
+            <div class="scenario-tools">
+              <label for="scenarioPreset"><small>Or choose a sample scenario:</small></label>
+              <select id="scenarioPreset" onchange="loadScenarioPreset(this.value)">
+                <option value="">— Select a preset scenario —</option>
+                ${scenarioPresets
+                  .map((s, i) => `<option value="${i}">${s.title}</option>`)
+                  .join("")}
+              </select>
+            </div>
             <textarea id="scenarioText"
               oninput="state.scenario = this.value">${state.scenario}</textarea>
             <div class="hint">
@@ -1108,7 +1246,42 @@
                 )
                 .join("")}
             </div>
-            <div class="hint">Hint: Match broad types to theories. e.g. class struggle → Marxist; memory/trauma → Trauma / Psychoanalytic; narrative voice → Narratology.</div>
+            <div class="hint">Hint: First match your problem keywords to broad types, then pick theories in that lane.</div>
+            <details class="compact-theory">
+              <summary>Compact Theory–Problem Type Table</summary>
+              <div class="theory-table">
+                <table>
+                  <tr>
+                    <th>Problem Type</th>
+                    <th>Example Theories</th>
+                  </tr>
+                  <tr>
+                    <td>Text / Form / Narrative</td>
+                    <td>Formalism, Structuralism, Narratology, Semiotics, Deconstruction, Postmodernism</td>
+                  </tr>
+                  <tr>
+                    <td>History / Society / Power</td>
+                    <td>Historical/Biographical, New Historicism, Cultural Studies, Marxist, Postcolonial, Orientalism, Afrofuturism</td>
+                  </tr>
+                  <tr>
+                    <td>Identity / Gender / Race</td>
+                    <td>Feminist, Gender, Queer, Critical Race, Disability, Intersectionality</td>
+                  </tr>
+                  <tr>
+                    <td>Mind / Experience / Trauma</td>
+                    <td>Psychoanalytic, Phenomenology, Existentialism, Trauma Theory</td>
+                  </tr>
+                  <tr>
+                    <td>Ethics / Values / Nature</td>
+                    <td>Humanism, Romanticism, Transcendentalism, Ecocriticism</td>
+                  </tr>
+                  <tr>
+                    <td>Reader / Audience</td>
+                    <td>Reader-Response, Reception Theory</td>
+                  </tr>
+                </table>
+              </div>
+            </details>
           </div>
           <div class="card">
             <h3>Current Choices</h3>
