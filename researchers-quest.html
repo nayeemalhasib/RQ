@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8"/>
   <title>The Researcher’s Quest RPG</title>
   <style>
     :root {
@@ -566,6 +566,73 @@
       width: 100%;
       font-size: 0.8rem;
     }
+/* -------------------------------------- */
+/* RESPONSIVE LAYOUT ENHANCEMENTS */
+/* -------------------------------------- */
+
+/* Small screens (Max width 640px) */
+@media (max-width: 640px) {
+  body {
+      padding: 12px; /* Reduce global padding */
+  }
+  #app {
+    padding: 16px 12px 14px; /* Reduce internal padding */
+  }
+  .step-container {
+    padding: 12px 10px;
+  }
+  /* Force two-column layout to stack vertically */
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .roles-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+  .xp-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* More compression for XP fields */
+  }
+  .keyword-item {
+    flex-wrap: wrap; /* Allow keyword row elements to wrap */
+  }
+  .keyword-item select {
+    width: 100%; /* Full width for select boxes when wrapped */
+    margin-top: 4px;
+  }
+}
+
+/* Extra Small screens (Max width 480px) - Header stacking and font reduction */
+@media (max-width: 480px) {
+    .header {
+        flex-direction: column; /* Stack header elements */
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .title-main {
+        font-size: 1.3rem; /* Reduce main title size */
+    }
+    .title-pill {
+        display: none; /* Hide the pill title to save space */
+    }
+    .subtitle {
+        font-size: 0.75rem;
+    }
+    .badge {
+        align-self: flex-end; /* Push the badge to the right */
+    }
+    /* Make roles grid more compact */
+    .roles-grid {
+        grid-template-columns: 1fr; /* Single column stack for roles if too narrow */
+    }
+    .step-pill {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+    }
+    .step-pill span.num {
+        width: 16px;
+        height: 16px;
+        font-size: 0.6rem;
+    }
+}
 </style>
 </head>
 <body>
@@ -656,13 +723,12 @@
     };
 
     const broadTypes = [
-        "Psychological / Trauma",
-        "Social / Economic / Marxist",
-        "Gender / Sexuality / Race",
-        "Postcolonial / Political",
-        "Ethical / Existential",
-        "Narrative / Formal",
-        "Environmental / Ecological",
+        "Text, Form & Structure",
+        "History, Society & Power",
+        "Identity, Gender, Sexuality, Race & Disability",
+        "Mind, Emotion, Experience & Trauma",
+        "Ethics, Values, Spirituality & Nature",
+        "Reader, Audience & Interpretation",
     ];
 
     const theoriesList = [
@@ -1257,26 +1323,26 @@
                   </tr>
                   <tr>
                     <td>Text / Form / Narrative</td>
-                    <td>Formalism, Structuralism, Narratology, Semiotics, Deconstruction, Postmodernism</td>
+                    <td>Formalism/New Criticism, Structuralism, Narratology, Semiotics, Deconstruction/Post-Structuralism, Postmodernism</td>
                   </tr>
                   <tr>
                     <td>History / Society / Power</td>
                     <td>Historical/Biographical, New Historicism, Cultural Studies, Marxist, Postcolonial, Orientalism, Afrofuturism</td>
                   </tr>
                   <tr>
-                    <td>Identity / Gender / Race</td>
+                    <td>Identity / Gender / Race / Disability</td>
                     <td>Feminist, Gender, Queer, Critical Race, Disability, Intersectionality</td>
                   </tr>
                   <tr>
-                    <td>Mind / Experience / Trauma</td>
+                    <td>Mind / Emotion / Experience / Trauma</td>
                     <td>Psychoanalytic, Phenomenology, Existentialism, Trauma Theory</td>
                   </tr>
                   <tr>
-                    <td>Ethics / Values / Nature</td>
+                    <td>Ethics / Values / Nature / Spirituality</td>
                     <td>Humanism, Romanticism, Transcendentalism, Ecocriticism</td>
                   </tr>
                   <tr>
-                    <td>Reader / Audience</td>
+                    <td>Reader / Audience / Interpretation</td>
                     <td>Reader-Response, Reception Theory</td>
                   </tr>
                 </table>
